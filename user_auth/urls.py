@@ -5,4 +5,3 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
 ]
 #test
-#test 2
