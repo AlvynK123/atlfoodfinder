@@ -2,10 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Search</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%; 
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCror64nawRqo2fkiG4KI-Y7ngeQpgIQmA&callback=initMap" 
+    async defer></script>
+    <script>
+        function initMap() {
+            const location = { lat: 33.7756, lng: -84.3963 };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: location,
+            });
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Search for Restaurants</h1>
-    <!-- Search form or content will go here -->
+    <div id="map"></div>
 </body>
 </html>
