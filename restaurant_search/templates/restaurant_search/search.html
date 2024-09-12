@@ -5,33 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Search</title>
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
         #map {
-            height: 400px;
-            width: 100%; 
+            height: 500px;
+            width: 80%;
+            max-width: 1000px;
+            margin: 20px 0;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        input[type="search"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
         }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCror64nawRqo2fkiG4KI-Y7ngeQpgIQmA&callback=initMap" 
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCror64nawRqo2fkiG4KI-Y7ngeQpgIQmA&libraries=places&callback=initMap" 
     async defer></script>
     <script>
+        let map;
+        let service;
+        let infowindow;
+
         function initMap() {
             const location = { lat: 33.7756, lng: -84.3963 };
-            const map = new google.maps.Map(document.getElementById("map"), {
+
+            map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 15,
                 center: location,
             });
-            const marker = new google.maps.Marker({
-                position: location,
-                map: map,
+
+            infowindow = new google.maps.InfoWindow();
+            service = new google.maps.places.PlacesService(map);
+
+            document.getElementById("search-form").addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent page reload
+                const query = document.getElementById("query").value;
+                searchNearbyRestaurants(location, query);
             });
+        }
+
+        function searchNearbyRestaurants(location, query) {
+            const request = {
+                location: location,
+                radius: '1500', 
+                type: ['restaurant'],
+                keyword: query, 
+            };
+
+            service.nearbySearch(request, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    clearMarkers();
+                    for (let i = 0; i < results.length; i++) {
+                        createMarker(results[i]);
+                    }
+                } else {
+                    alert("No restaurants found.");
+                }
+            });
+        }
+
+        let markers = [];
+
+        function createMarker(place) {
+            const marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location,
+            });
+
+            markers.push(marker);
+
+            google.maps.event.addListener(marker, 'click', () => {
+                infowindow.setContent(`<div><strong>${place.name}</strong><br>
+                                       Address: ${place.vicinity}<br>
+                                       Rating: ${place.rating ? place.rating : 'N/A'}</div>`);
+                infowindow.open(map, marker);
+            });
+        }
+
+        function clearMarkers() {
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+            markers = [];
         }
     </script>
 </head>
 <body>
     <h1>Search for Restaurants</h1>
-        
-    <form id=""form></form>
-    <input type="search" id="query" name="q" placeholder="Search...">
-    <button>Search</button>
+
+    <form id="search-form">
+        <input type="search" id="query" name="q" placeholder="Search...">
+        <button type="button">Search</button>
     </form>
 
     <div id="map"></div>
