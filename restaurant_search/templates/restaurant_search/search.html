@@ -21,7 +21,7 @@
 
         form {
             display: flex;
-            justify-content: center;
+            flex-direction: row;
             align-items: center;
             margin: 20px 0;
         }
@@ -30,21 +30,32 @@
             padding: 10px;
             font-size: 16px;
             width: 300px;
+            margin-bottom: 0px;
         }
 
         button {
             padding: 10px;
             font-size: 16px;
-            margin-left: 10px;
             cursor: pointer;
         }
+
+        #search-results {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        .result-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCror64nawRqo2fkiG4KI-Y7ngeQpgIQmA&libraries=places&callback=initMap" 
-    async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCror64nawRqo2fkiG4KI-Y7ngeQpgIQmA&libraries=places&callback=initMap" async defer></script>
     <script>
         let map;
         let service;
         let infowindow;
+        let markers = [];
 
         function initMap() {
             const location = { lat: 33.7756, lng: -84.3963 };
@@ -59,32 +70,38 @@
 
             document.getElementById("search-form").addEventListener("submit", function(event) {
                 event.preventDefault(); // Prevent page reload
-                const query = document.getElementById("query").value;
-                searchNearbyRestaurants(location, query);
+
+                const name = document.getElementById("name").value;
+                const cuisine = document.getElementById("cuisine").value;
+                const locationInput = document.getElementById("location").value;
+
+                // Validate search inputs
+                if (!name && !cuisine && !locationInput) {
+                    alert("Please provide at least one search parameter.");
+                    return;
+                }
+                searchNearbyRestaurants(location, name, cuisine);
             });
         }
 
-        function searchNearbyRestaurants(location, query) {
+        function searchNearbyRestaurants(location, name, cuisine) {
             const request = {
                 location: location,
-                radius: '1500', 
+                radius: '10000',
                 type: ['restaurant'],
-                keyword: query, 
+                keyword: name + ' ' + cuisine
             };
 
             service.nearbySearch(request, (results, status) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     clearMarkers();
-                    for (let i = 0; i < results.length; i++) {
-                        createMarker(results[i]);
-                    }
+                    results.forEach(place => createMarker(place));
+                    displaySearchResults(results);
                 } else {
                     alert("No restaurants found.");
                 }
             });
         }
-
-        let markers = [];
 
         function createMarker(place) {
             const marker = new google.maps.Marker({
@@ -103,10 +120,30 @@
         }
 
         function clearMarkers() {
-            for (let i = 0; i < markers.length; i++) {
-                markers[i].setMap(null);
-            }
+            markers.forEach(marker => marker.setMap(null));
             markers = [];
+        }
+
+        function displaySearchResults(restaurants) {
+            const resultsDiv = document.getElementById("search-results");
+            resultsDiv.innerHTML = '';
+
+            if (restaurants.length === 0) {
+                resultsDiv.innerHTML = '<p>No restaurants found.</p>';
+                return;
+            }
+
+            restaurants.forEach(restaurant => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <strong>${restaurant.name}</strong><br>
+                    Cuisine: ${restaurant.types.join(', ')}<br>
+                    Address: ${restaurant.vicinity}<br>
+                    Rating: ${restaurant.rating ? restaurant.rating : 'N/A'}
+                `;
+                resultsDiv.appendChild(resultItem);
+            });
         }
     </script>
 </head>
@@ -114,11 +151,13 @@
     <h1>Search for Restaurants</h1>
 
     <form id="search-form">
-        <input type="search" id="query" name="q" placeholder="Search...">
-        <button type="button">Search</button>
+        <input type="search" id="name" name="name" placeholder="Restaurant Name">
+        <input type="search" id="cuisine" name="cuisine" placeholder="Cuisine Type">
+        <input type="search" id="location" name="location" placeholder="Location">
+        <button type="submit">Search</button>
     </form>
 
+    <div id="search-results"></div>
     <div id="map"></div>
-
 </body>
 </html>
