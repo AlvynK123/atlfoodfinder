@@ -1,55 +1,11 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'restaurant_search\style.css' %}">
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Search</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-        }
-
-        #map {
-            height: 500px;
-            width: 80%;
-            max-width: 1000px;
-            margin: 20px 0;
-        }
-
-        form {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        input[type="search"] {
-            padding: 10px;
-            font-size: 16px;
-            width: 300px;
-            margin-bottom: 0px;
-        }
-
-        button {
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        #search-results {
-            margin-top: 20px;
-            width: 80%;
-            max-width: 1000px;
-        }
-
-        .result-item {
-            border-bottom: 1px solid #ddd;
-            padding: 10px 0;
-        }
-    </style>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCror64nawRqo2fkiG4KI-Y7ngeQpgIQmA&libraries=places&callback=initMap" async defer></script>
     <script>
         let map;
@@ -148,16 +104,39 @@
     </script>
 </head>
 <body>
-    <h1>Search for Restaurants</h1>
 
-    <form id="search-form">
-        <input type="search" id="name" name="name" placeholder="Restaurant Name">
-        <input type="search" id="cuisine" name="cuisine" placeholder="Cuisine Type">
-        <input type="search" id="location" name="location" placeholder="Location">
-        <button type="submit">Search</button>
-    </form>
+    <!--HEADER-->
 
-    <div id="search-results"></div>
-    <div id="map"></div>
+    <header>
+        <div class="container"> 
+            <div class="logo">
+                <img src="{% static 'images\logo.png' %}" atl="Logo">
+            </div>
+
+            <div class="search-bar">
+                <form id="search-form">
+                    <input type="search" id="name" name="name" placeholder="Restaurant Name">
+                    <input type="search" id="cuisine" name="cuisine" placeholder="Cuisine Type">
+                    <input type="search" id="location" name="location" placeholder="Location">
+                    <button type="submit"><img src="{% static 'images\search.png' %}" atl="Search"></button>
+                </form>
+            </div>
+
+            <div class="buttons">
+                <a href="{% url 'login' %}" class="btn">Log In</a>
+                <a href="{% url 'login' %}" class="btn2">Sign Up</a>
+            </div>
+
+        </div>
+        <hr>
+    </header>
+
+    <!--MAIN-->
+
+    <main>
+        <div id="search-results"></div>
+        <div id="map"></div>
+    </main>
+    
 </body>
 </html>
