@@ -1,0 +1,12 @@
+form {
+    max-width: 300px;
+    margin: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    margin: 5px 0;
+}
