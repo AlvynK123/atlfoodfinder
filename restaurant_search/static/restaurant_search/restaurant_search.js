@@ -41,7 +41,7 @@ function searchNearbyRestaurants(location, name, cuisine) {
     service.nearbySearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             clearMarkers();
-            results.forEach(place => createMarker(place));
+            results.forEach((place, index) => createMarker(place, index + 1));
             displaySearchResults(results);
         } else {
             alert("No restaurants found.");
@@ -49,10 +49,11 @@ function searchNearbyRestaurants(location, name, cuisine) {
     });
 }
 
-function createMarker(place) {
+function createMarker(place, number) {
     const marker = new google.maps.Marker({
         map: map,
         position: place.geometry.location,
+        label: number.toString(),
     });
 
     markers.push(marker);
@@ -83,7 +84,7 @@ function displaySearchResults(restaurants) {
         return;
     }
 
-    restaurants.forEach(restaurant => {
+    restaurants.forEach((restaurant, index) => {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
 
@@ -103,7 +104,7 @@ function displaySearchResults(restaurants) {
 
         resultItem.innerHTML = `
             <img class="restaurant-img" src="${photoUrl}" alt="${restaurant.name}"><br>
-            <strong>${restaurant.name}</strong><br>
+            <strong>${index + 1}. ${restaurant.name}</strong><br>
             Cuisine: ${cuisineText}<br>
             Address: ${restaurant.vicinity}<br>
             Rating: ${restaurant.rating ? restaurant.rating : 'N/A'}
