@@ -1,5 +1,5 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'restaurant_search\style.css' %}">
+<link rel="stylesheet" href="{% static 'restaurant_search/style.css' %}">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,101 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Search</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCror64nawRqo2fkiG4KI-Y7ngeQpgIQmA&libraries=places&callback=initMap" async defer></script>
-    <script>
-        let map;
-        let service;
-        let infowindow;
-        let markers = [];
-
-        function initMap() {
-            const location = { lat: 33.7756, lng: -84.3963 };
-
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15,
-                center: location,
-            });
-
-            infowindow = new google.maps.InfoWindow();
-            service = new google.maps.places.PlacesService(map);
-
-            document.getElementById("search-form").addEventListener("submit", function(event) {
-                event.preventDefault(); // Prevent page reload
-
-                const name = document.getElementById("name").value;
-                const cuisine = document.getElementById("cuisine").value;
-                const locationInput = document.getElementById("location").value;
-
-                // Validate search inputs
-                if (!name && !cuisine && !locationInput) {
-                    alert("Please provide at least one search parameter.");
-                    return;
-                }
-                searchNearbyRestaurants(location, name, cuisine);
-            });
-        }
-
-        function searchNearbyRestaurants(location, name, cuisine) {
-            const request = {
-                location: location,
-                radius: '10000',
-                type: ['restaurant'],
-                keyword: name + ' ' + cuisine
-            };
-
-            service.nearbySearch(request, (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    clearMarkers();
-                    results.forEach(place => createMarker(place));
-                    displaySearchResults(results);
-                } else {
-                    alert("No restaurants found.");
-                }
-            });
-        }
-
-        function createMarker(place) {
-            const marker = new google.maps.Marker({
-                map: map,
-                position: place.geometry.location,
-            });
-
-            markers.push(marker);
-
-            google.maps.event.addListener(marker, 'click', () => {
-                infowindow.setContent(`<div><strong>${place.name}</strong><br>
-                                       Address: ${place.vicinity}<br>
-                                       Rating: ${place.rating ? place.rating : 'N/A'}</div>`);
-                infowindow.open(map, marker);
-            });
-        }
-
-        function clearMarkers() {
-            markers.forEach(marker => marker.setMap(null));
-            markers = [];
-        }
-
-        function displaySearchResults(restaurants) {
-            const resultsDiv = document.getElementById("search-results");
-            resultsDiv.innerHTML = '';
-
-            if (restaurants.length === 0) {
-                resultsDiv.innerHTML = '<p>No restaurants found.</p>';
-                return;
-            }
-
-            restaurants.forEach(restaurant => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
-                resultItem.innerHTML = `
-                    <strong>${restaurant.name}</strong><br>
-                    Cuisine: ${restaurant.types.join(', ')}<br>
-                    Address: ${restaurant.vicinity}<br>
-                    Rating: ${restaurant.rating ? restaurant.rating : 'N/A'}
-                `;
-                resultsDiv.appendChild(resultItem);
-            });
-        }
-    </script>
+    <script src="{% static 'restaurant_search/restaurant_search.js' %}"></script>
 </head>
 <body>
 
@@ -110,7 +16,7 @@
     <header>
         <div class="container"> 
             <div class="logo">
-                <img src="{% static 'images\logo.png' %}" atl="Logo">
+                <img src="{% static 'images/logo.png' %}" alt="Logo">
             </div>
 
             <div class="search-bar">
@@ -118,7 +24,7 @@
                     <input type="search" id="name" name="name" placeholder="Restaurant Name">
                     <input type="search" id="cuisine" name="cuisine" placeholder="Cuisine Type">
                     <input type="search" id="location" name="location" placeholder="Location">
-                    <button type="submit"><img src="{% static 'images\search.png' %}" atl="Search"></button>
+                    <button type="submit"><img src="{% static 'images/search.png' %}" alt="Search"></button>
                 </form>
             </div>
 
