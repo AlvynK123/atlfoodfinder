@@ -7,7 +7,7 @@ function initMap() {
     const location = { lat: 33.7756, lng: -84.3963 };
 
     map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
+        zoom: 11,
         center: location,
     });
 
@@ -75,6 +75,23 @@ function clearMarkers() {
     markers = [];
 }
 
+function getStarRating(rating) {
+    const maxStars = 5;
+    let starHtml = '<div class="star-rating">';
+
+    for (let i =  1; i <= maxStars; i++) {
+        if (i <= rating) {
+            starHtml += '<i class="fa-solid fa-star" style="color: #ffd95a;"></i>'; // Full star
+        } else if (i - rating <= 0.5) {
+            starHtml += '<i class="fa-regular fa-star-half-stroke" style="color: #ffd95a;"></i>'; // Half star
+        } else {
+            starHtml += '<i class="fa-regular fa-star" style="color: #ffd95a;"></i>'; // Empty star
+        }
+
+    }
+    return starHtml;
+}
+
 function displaySearchResults(restaurants) {
     const resultsDiv = document.getElementById("search-results");
     resultsDiv.innerHTML = '';
@@ -102,13 +119,17 @@ function displaySearchResults(restaurants) {
         );
         const cuisineText = cuisineTypes.map(type => type.replace(/_/g, ' ')).join(', ') || 'Cuisine not available';
 
+        const starRatingHtml = getStarRating(restaurant.rating || 0);
+
         resultItem.innerHTML = `
-            <img class="restaurant-img" src="${photoUrl}" alt="${restaurant.name}"><br>
-            <strong>${index + 1}. ${restaurant.name}</strong><br>
-            Cuisine: ${cuisineText}<br>
-            Address: ${restaurant.vicinity}<br>
-            Rating: ${restaurant.rating ? restaurant.rating : 'N/A'}
-        `;
+        <img class="restaurant-img" src="${photoUrl}" alt="${restaurant.name}">
+        <div class="result-item-details">
+            <strong>${index + 1}. ${restaurant.name}</strong>
+            <div class="star-rating">${starRatingHtml}</div>
+            <div>Cuisine: ${cuisineText}</div>
+            <div>Address: ${restaurant.vicinity}</div>
+        </div>
+    `;
         resultsDiv.appendChild(resultItem);
     });
 }

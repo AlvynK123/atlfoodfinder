@@ -144,3 +144,15 @@ main {
     object-fit: cover; 
     border-radius: 8px; 
 }
+
+.result-item-details strong {
+    font-size: 25px;
+}
+
+.star-rating i {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 1.5em;
+    color: #ffd95a;
+    margin-right: 2px;
+}

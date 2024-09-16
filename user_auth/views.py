@@ -19,3 +19,6 @@ def register(request):
 @login_required
 def profile(request):
     return render(request, 'user_auth/profile.html')
+
+def search_view(request):
+    return render(request, 'restaurant_search/search.html')
