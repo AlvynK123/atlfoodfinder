@@ -3,6 +3,14 @@ let service;
 let infowindow;
 let markers = [];
 
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof google !== 'undefined') {
+        initMap();
+    } else {
+        console.error("Google Maps API is not available.");
+    }
+});
+
 function initMap() {
     const location = { lat: 33.7756, lng: -84.3963 };
 

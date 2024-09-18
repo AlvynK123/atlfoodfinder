@@ -14,8 +14,9 @@
 
     <!--HEADER-->
 
+    <!--HEADER-->
     <header>
-        <div class="container"> 
+        <div class="container">
             <div class="logo">
                 <img src="{% static 'images/logo.png' %}" alt="Logo">
             </div>
@@ -30,8 +31,15 @@
             </div>
 
             <div class="buttons">
-                <a href="{% url 'login' %}" class="btn">Log In</a>
-                <a href="{% url 'register' %}" class="btn2">Sign Up</a>
+                {% if user.is_authenticated %}
+                    <!-- Dropdown menu for authenticated users -->
+                    <a href="{% url 'profile' %}" class="btn">My Profile</a>
+                    <a href="{% url 'logout' %}" class="btn2">Log Out</a>
+                {% else %}
+                    <!-- Show login and signup for unauthenticated users -->
+                    <a href="{% url 'login' %}" class="btn">Log In</a>
+                    <a href="{% url 'register' %}" class="btn2">Sign Up</a>
+                {% endif %}
             </div>
 
         </div>

@@ -1,18 +1,10 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title>Profile</title>
 </head>
 <body>
-    <h1>Welcome to your profile, {{ user.username }}!</h1>
-    <p>Email: {{ user.email }}</p>
-    <p>Account created on: {{ user.date_joined }}</p>
-
-    <h2>Account Settings</h2>
-    <p><a href="{% url 'login' %}">Logout</a></p>
-    <p><a href="{% url 'search' %}" >Search</a></p>
+    <h1>Welcome, {{ user.username }}</h1>
+    <p>This is your profile page.</p>
 </body>
 </html>
