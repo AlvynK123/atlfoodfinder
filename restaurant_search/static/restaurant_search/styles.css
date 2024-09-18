@@ -7,6 +7,9 @@ body {
 header {
     position: static;
     align-items: center; 
+    background-color: #F0EBD8;
+    margin: -1px 0 10px 0;
+
 }
 
 .container {
@@ -16,7 +19,7 @@ header {
 }
 
 .logo img { 
-    max-width: 150px;
+    max-width: 140px;
     height: auto;
     margin-left: 20;
 }
@@ -45,7 +48,7 @@ header {
 
 .search-bar button {
     padding: 15px 30px; 
-    background-color: #ffc70e;
+    background-color: #00b4d8;
     color: #fff;
     border: 0px solid #ccc; 
     border-radius: 0 4px 4px 0;
@@ -60,7 +63,7 @@ header {
 }
 
 .search-bar button:hover {
-    background-color: #ffd95a;
+    background-color: #90e0ef;
 }
 
 .buttons {
@@ -85,9 +88,9 @@ header {
 }
 
 .btn2 {
-    background-color: #ffc70e;
+    background-color: #00b4d8;
     color: #fff;
-    border: 1px solid #ffc70e;
+    border: 1px solid #00b4d8;
 }
 
 .btn:hover {
@@ -95,15 +98,15 @@ header {
 }
 
 .btn2:hover {
-    background-color: #ffd95a;
-    border: 1px solid #ffd95a; 
+    background-color: #90e0ef;
+    border: 1px solid #90e0ef; 
 }
 
 hr {
     border: 0;
     border-top: 1px solid #d2d2d2;
     width: 100%;
-    margin: -10px 0 10px 0;
+    margin: -.5px 0 10px 0;
     position: absolute; 
     left: 0;
 }

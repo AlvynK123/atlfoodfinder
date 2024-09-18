@@ -41,8 +41,10 @@ function searchNearbyRestaurants(location, name, cuisine) {
     service.nearbySearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             clearMarkers();
-            results.forEach((place, index) => createMarker(place, index + 1));
-            displaySearchResults(results);
+            results.forEach((place, index) => {
+                createMarker(place, index + 1);
+                displaySearchResults(results);
+            });
         } else {
             alert("No restaurants found.");
         }
