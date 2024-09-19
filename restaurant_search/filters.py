@@ -1,23 +1,28 @@
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
-from settings import *
+from nltk.stem import WordNetLemmatizer
+from django.conf import settings  # For Django settings access
+
+# Initialize lemmatizer
+lemmatizer = WordNetLemmatizer()
 
 def get_page_content(row):
-    soup = BeautifulSoup(row["html"])
-    text = soup_get_text()
+    soup = BeautifulSoup(row["html"], 'html.parser')
+    text = soup.get_text()  # Extract text from the HTML
     return text
 
-class Filter():
-    def __init__(self, results):
-        self.filered = results.copy()
+def lemmatize_text(text):
+    words = text.split()
+    return ' '.join([lemmatizer.lemmatize(word) for word in words])
+
+class Filter:
+    def __init__(self, df):
+        self.filtered = df.copy()
 
     def content_filter(self):
-        page_content = self.filtered.apply(get_page_content, axis=1)
-        word_count = page_content.apply(lambda x: lem(x.split(" ")))
-        word_count /= word_count.median()
-
+        # Apply text extraction and lemmatization
+        self.filtered['lemmatized_content'] = self.filtered.apply(lambda row: lemmatize_text(get_page_content(row)), axis=1)
 
     def filter(self):
         self.content_filter()
-        self.filtered - self.filtered.sort_values("rank", ascending=True)
+        self.filtered = self.filtered.sort_values("rank", ascending=True)
         self.filtered["rank"] = self.filtered["rank"].round()

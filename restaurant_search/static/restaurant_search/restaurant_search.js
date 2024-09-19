@@ -28,17 +28,19 @@ function initMap() {
         const name = document.getElementById("name").value;
         const cuisine = document.getElementById("cuisine").value;
         const locationInput = document.getElementById("location").value;
+        const minRating = document.getElementById("min-rating").value; // Get the selected minimum rating
 
         // Validate search inputs
         if (!name && !cuisine && !locationInput) {
             alert("Please provide at least one search parameter.");
             return;
         }
-        searchNearbyRestaurants(location, name, cuisine);
+
+        searchNearbyRestaurants(location, name, cuisine, minRating);
     });
 }
 
-function searchNearbyRestaurants(location, name, cuisine) {
+function searchNearbyRestaurants(location, name, cuisine, minRating) {
     const request = {
         location: location,
         radius: '10000',
@@ -49,10 +51,22 @@ function searchNearbyRestaurants(location, name, cuisine) {
     service.nearbySearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             clearMarkers();
-            results.forEach((place, index) => {
-                createMarker(place, index + 1);
-                displaySearchResults(results);
+            
+            // Filter results based on minimum rating
+            const filteredResults = results.filter(restaurant => {
+                return (restaurant.rating || 0) >= minRating;
             });
+
+            if (filteredResults.length === 0) {
+                document.getElementById('search-results').innerHTML = '<p>No restaurants found matching the criteria.</p>';
+                return;
+            }
+
+            filteredResults.forEach((place, index) => {
+                createMarker(place, index + 1);
+            });
+
+            displaySearchResults(filteredResults);
         } else {
             alert("No restaurants found.");
         }
@@ -151,37 +165,37 @@ function displaySearchResults(restaurants) {
             showPopup(placeId);
         });
     });
+}
 
-    function showPopup(placeId) {
-        service.getDetails({ placeId: placeId }, (place, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                const popup = document.getElementById("restaurant-popup");
-                const popupDetails = document.getElementById("popup-details");
-    
-                popupDetails.innerHTML = `
-                    <h2>${place.name}</h2>
-                    <p>Address: ${place.formatted_address}</p>
-                    <p>Phone: ${place.formatted_phone_number || 'N/A'}</p>
-                    <p>Rating: ${place.rating || 'N/A'}</p>
-                    <p>Website: ${place.website ? `<a href="${place.website}" target="_blank">${place.website}</a>` : 'N/A'}</p>
-                    <button class="close-popup-btn">Close</button>
-                `;
-    
-                popup.classList.remove("hidden");
-                popup.classList.add("show");
-    
-                document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
-            }
-        });
-    }
-    
-    function closePopup() {
-        const popup = document.getElementById('restaurant-popup');
-        popup.classList.add('hidden');
-        popup.classList.remove('show');
-    }
+function showPopup(placeId) {
+    service.getDetails({ placeId: placeId }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            const popup = document.getElementById("restaurant-popup");
+            const popupDetails = document.getElementById("popup-details");
 
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
+            popupDetails.innerHTML = `
+                <h2>${place.name}</h2>
+                <p>Address: ${place.formatted_address}</p>
+                <p>Phone: ${place.formatted_phone_number || 'N/A'}</p>
+                <p>Rating: ${place.rating || 'N/A'}</p>
+                <p>Website: ${place.website ? `<a href="${place.website}" target="_blank">${place.website}</a>` : 'N/A'}</p>
+                <button class="close-popup-btn">Close</button>
+            `;
+
+            popup.classList.remove("hidden");
+            popup.classList.add("show");
+
+            document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
+        }
     });
 }
+
+function closePopup() {
+    const popup = document.getElementById('restaurant-popup');
+    popup.classList.add('hidden');
+    popup.classList.remove('show');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
+});
