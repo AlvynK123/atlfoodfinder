@@ -30,7 +30,6 @@ function initMap() {
         const locationInput = document.getElementById("location").value;
         const minRating = document.getElementById("min-rating").value; // Get the selected minimum rating
 
-        // Validate search inputs
         if (!name && !cuisine && !locationInput) {
             alert("Please provide at least one search parameter.");
             return;
@@ -112,7 +111,6 @@ function getStarRating(rating) {
         } else {
             starHtml += '<i class="fa-regular fa-star" style="color: #ffd95a;"></i>'; // Empty star
         }
-
     }
     return starHtml;
 }
@@ -130,7 +128,6 @@ function displaySearchResults(restaurants) {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
 
-        // Check for photos
         let photoUrl = '';
         if (restaurant.photos && restaurant.photos.length > 0) {
             photoUrl = restaurant.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
@@ -165,7 +162,6 @@ function displaySearchResults(restaurants) {
             showPopup(placeId);
         });
     });
-}
 
 function showPopup(placeId) {
     service.getDetails({ placeId: placeId }, (place, status) => {
@@ -186,6 +182,12 @@ function showPopup(placeId) {
             popup.classList.add("show");
 
             document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
+            // Create the close button with the event listener attached directly
+            const closeButton = document.createElement('button');
+            closeButton.className = "close-popup-btn";
+            closeButton.textContent = "Close";
+            closeButton.addEventListener('click', closePopup);
+            popup.querySelector('.popup-content').appendChild(closeButton);
         }
     });
 }
@@ -195,7 +197,3 @@ function closePopup() {
     popup.classList.add('hidden');
     popup.classList.remove('show');
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
-});
