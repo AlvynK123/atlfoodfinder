@@ -14,7 +14,6 @@
 
     <!--HEADER-->
 
-    <!--HEADER-->
     <header>
         <div class="container">
             <div class="logo">
@@ -41,18 +40,23 @@
                     <a href="{% url 'register' %}" class="btn2">Sign Up</a>
                 {% endif %}
             </div>
-
         </div>
         <hr>
     </header>
 
-    <!--MAIN-->
-
+    <!-- MAIN CONTENT -->
     <main class="main-container">
-        <!--<div class="filter-column">Filter</div>-->
         <div id="search-results"></div>
         <div id="map"></div>
     </main>
-    
+
+    <!-- POPUP MODAL FOR RESTAURANT DETAILS -->
+    <div id="restaurant-popup" class="popup hidden">
+        <div class="popup-content">
+            <span class="close-popup-btn">&times;</span>
+            <div id="popup-details"></div>
+        </div>
+    </div>
+
 </body>
 </html>

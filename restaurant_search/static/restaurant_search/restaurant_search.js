@@ -74,6 +74,7 @@ function createMarker(place, number) {
                 <strong>${place.name}</strong><br>
                 Address: ${place.vicinity}<br>
                 Rating: ${place.rating ? place.rating : 'N/A'}
+                <br><button class="info-button" data-place-id="${place.place_id}">More Info</button>
             </div>
         `);
         infowindow.open(map, marker);
@@ -138,8 +139,49 @@ function displaySearchResults(restaurants) {
             <div class="star-rating">${starRatingHtml}</div>
             <div>Cuisine: ${cuisineText}</div>
             <div>Address: ${restaurant.vicinity}</div>
+            <button class="info-button" data-place-id="${restaurant.place_id}">More Info</button>
         </div>
     `;
         resultsDiv.appendChild(resultItem);
+    });
+
+    document.querySelectorAll('.info-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const placeId = this.getAttribute('data-place-id');
+            showPopup(placeId);
+        });
+    });
+
+    function showPopup(placeId) {
+        service.getDetails({ placeId: placeId }, (place, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                const popup = document.getElementById("restaurant-popup");
+                const popupDetails = document.getElementById("popup-details");
+    
+                popupDetails.innerHTML = `
+                    <h2>${place.name}</h2>
+                    <p>Address: ${place.formatted_address}</p>
+                    <p>Phone: ${place.formatted_phone_number || 'N/A'}</p>
+                    <p>Rating: ${place.rating || 'N/A'}</p>
+                    <p>Website: ${place.website ? `<a href="${place.website}" target="_blank">${place.website}</a>` : 'N/A'}</p>
+                    <button class="close-popup-btn">Close</button>
+                `;
+    
+                popup.classList.remove("hidden");
+                popup.classList.add("show");
+    
+                document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
+            }
+        });
+    }
+    
+    function closePopup() {
+        const popup = document.getElementById('restaurant-popup');
+        popup.classList.add('hidden');
+        popup.classList.remove('show');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
     });
 }
