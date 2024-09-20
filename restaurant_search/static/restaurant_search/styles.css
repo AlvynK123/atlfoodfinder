@@ -7,7 +7,7 @@ body {
 header {
     position: static;
     align-items: center; 
-    background-color: #F0EBD8;
+    background-color: #ffffff;
     margin: -1px 0 10px 0;
 
 }
@@ -106,7 +106,7 @@ hr {
     border: 0;
     border-top: 1px solid #d2d2d2;
     width: 100%;
-    margin: -.5px 0 10px 0;
+    margin: -5px 0 10px 0;
     position: absolute; 
     left: 0;
 }
