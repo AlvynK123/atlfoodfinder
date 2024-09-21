@@ -91,6 +91,15 @@ function createMarker(place, number) {
             </div>
         `);
         infowindow.open(map, marker);
+
+
+
+    document.querySelectorAll('.info-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const placeId = this.getAttribute('data-place-id');
+            showPopup(placeId);
+        });
+    });
     });
 }
 
@@ -135,7 +144,6 @@ function displaySearchResults(restaurants) {
             photoUrl = 'default-image.jpg'; // I need to change
         }
 
-        // Filter cuisine types and turns them into text
         const cuisineTypes = restaurant.types.filter(type =>
             !['point_of_interest', 'establishment'].includes(type)
         );
@@ -162,12 +170,26 @@ function displaySearchResults(restaurants) {
             showPopup(placeId);
         });
     });
+}
 
-function showPopup(placeId) {
+    function showPopup(placeId) {
     service.getDetails({ placeId: placeId }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             const popup = document.getElementById("restaurant-popup");
             const popupDetails = document.getElementById("popup-details");
+
+            let reviewsHtml = '';
+            if (place.reviews && place.reviews.length > 0) {
+                reviewsHtml = place.reviews.map(review => `
+                    <div class="review">
+                        <strong>${review.author_name}</strong>
+                        <div class="star-rating">${getStarRating(review.rating)}</div>
+                        <p>${review.text}</p>
+                    </div>
+                `).join('');
+            } else {
+                reviewsHtml = '<p>No reviews available.</p>';
+            }
 
             popupDetails.innerHTML = `
                 <h2>${place.name}</h2>
@@ -175,6 +197,10 @@ function showPopup(placeId) {
                 <p>Phone: ${place.formatted_phone_number || 'N/A'}</p>
                 <p>Rating: ${place.rating || 'N/A'}</p>
                 <p>Website: ${place.website ? `<a href="${place.website}" target="_blank">${place.website}</a>` : 'N/A'}</p>
+                <h3>Reviews:</h3>
+                <div class="reviews" style="max-height: 200px; overflow-y: auto;">
+                    ${reviewsHtml}
+                </div>
                 <button class="close-popup-btn">Close</button>
             `;
 
@@ -182,19 +208,17 @@ function showPopup(placeId) {
             popup.classList.add("show");
 
             document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
-            // Create the close button with the event listener attached directly
             const closeButton = document.createElement('button');
             closeButton.className = "close-popup-btn";
             closeButton.textContent = "Close";
             closeButton.addEventListener('click', closePopup);
             popup.querySelector('.popup-content').appendChild(closeButton);
         }
-    });
-}
+        });
+    }
 
-function closePopup() {
-    const popup = document.getElementById('restaurant-popup');
-    popup.classList.add('hidden');
-    popup.classList.remove('show');
-}
-}
+    function closePopup() {
+        const popup = document.getElementById('restaurant-popup');
+        popup.classList.add('hidden');
+        popup.classList.remove('show');
+    }
