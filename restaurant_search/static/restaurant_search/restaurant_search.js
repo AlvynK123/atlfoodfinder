@@ -217,8 +217,9 @@ function displaySearchResults(restaurants) {
         });
     }
 
-    function closePopup() {
-        const popup = document.getElementById('restaurant-popup');
-        popup.classList.add('hidden');
-        popup.classList.remove('show');
-    }
+function closePopup() {
+    const popup = document.getElementById('restaurant-popup');
+    popup.classList.add('hidden');
+    popup.classList.remove('show');
+}
+}
