@@ -24,17 +24,26 @@
                     <input type="search" id="name" name="name" placeholder="Restaurant Name">
                     <input type="search" id="cuisine" name="cuisine" placeholder="Cuisine Type">
                     <input type="search" id="location" name="location" placeholder="Location">
+                    
+                    <!-- Rating filter dropdown -->
+                    <select id="min-rating" name="min-rating">
+                        <option value="0">All Ratings</option>
+                        <option value="1">1 Star & above</option>
+                        <option value="2">2 Stars & above</option>
+                        <option value="3">3 Stars & above</option>
+                        <option value="4">4 Stars & above</option>
+                        <option value="5">5 Stars only</option>
+                    </select>
+
                     <button type="submit"><img src="{% static 'images/search.png' %}" alt="Search"></button>
                 </form>
             </div>
 
             <div class="buttons">
                 {% if user.is_authenticated %}
-                    <!-- Dropdown menu for authenticated users -->
                     <a href="{% url 'profile' %}" class="btn">My Profile</a>
                     <a href="{% url 'logout' %}" class="btn2">Log Out</a>
                 {% else %}
-                    <!-- Show login and signup for unauthenticated users -->
                     <a href="{% url 'login' %}" class="btn">Log In</a>
                     <a href="{% url 'register' %}" class="btn2">Sign Up</a>
                 {% endif %}
@@ -52,10 +61,9 @@
     <!-- POPUP MODAL FOR RESTAURANT DETAILS -->
     <div id="restaurant-popup" class="popup hidden">
         <div class="popup-content">
-            <span class="close-popup-btn">&times;</span>
+            <button class="close-popup-btn">Close</button>
             <div id="popup-details"></div>
         </div>
     </div>
-
 </body>
 </html>
