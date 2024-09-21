@@ -222,4 +222,3 @@ function closePopup() {
     popup.classList.add('hidden');
     popup.classList.remove('show');
 }
-}
