@@ -87,19 +87,12 @@ function createMarker(place, number) {
                 <strong>${place.name}</strong><br>
                 Address: ${place.vicinity}<br>
                 Rating: ${place.rating ? place.rating : 'N/A'}
-                <br><button class="info-button" data-place-id="${place.place_id}">More Info</button>
+                <br><a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank">
+                    <button class="info-button">View on Google Maps</button>
+                </a>
             </div>
         `);
         infowindow.open(map, marker);
-
-
-
-    document.querySelectorAll('.info-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const placeId = this.getAttribute('data-place-id');
-            showPopup(placeId);
-        });
-    });
     });
 }
 
