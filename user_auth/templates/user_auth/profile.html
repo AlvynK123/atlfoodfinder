@@ -1,10 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+        .user_card {
+            width: 100%;
+            max-width: 400px;
+            margin-top: auto;
+            margin-bottom: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+        .user_card h3 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .profile_container p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .favorites_list h4 {
+            margin-top: 20px;
+            font-weight: 600;
+            color: #555;
+        }
+        .restaurant_item {
+            background-color: #f7ba5b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+        .btn-danger {
+            background-color: #ff5e57;
+            border-color: #ff5e57;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background-color: #ff4140;
+        }
+        .user_card a {
+            text-decoration: none;
+        }
+        .user_card a:hover {
+            text-decoration: none;
+        }
+        /* Responsive */
+        @media(max-width: 768px) {
+            .user_card {
+                width: 90%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome, {{ user.username }}</h1>
-    <p>This is your profile page.</p>
+    <div class="container h-100">
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="user_card">
+                <h3 id="form-title"><i class="fas fa-user-circle"></i> Profile: {{ user.username }}</h3>
+                <div class="profile_container">
+                    <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ user.email }}</p>
+                </div>
+                <div class="favorites_list">
+                    <h4><i class="fas fa-utensils"></i> Your Favorite Restaurants:</h4>
+                    {% if favorites %}
+                        <ul class="list-unstyled">
+                            {% for restaurant in favorites %}
+                                <li class="restaurant_item">
+                                    <strong>{{ restaurant.name }}</strong><br>
+                                    Cuisine: {{ restaurant.cuisine }}<br>
+                                    Location: {{ restaurant.location }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No favorite restaurants yet.</p>
+                    {% endif %}
+                </div>
+                <a href="{% url 'logout' %}" class="btn btn-danger mt-4">Log Out</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
