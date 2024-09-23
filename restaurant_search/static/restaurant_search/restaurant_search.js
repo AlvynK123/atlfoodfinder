@@ -87,7 +87,9 @@ function createMarker(place, number) {
                 <strong>${place.name}</strong><br>
                 Address: ${place.vicinity}<br>
                 Rating: ${place.rating ? place.rating : 'N/A'}
-                <br><button class="info-button" data-place-id="${place.place_id}">More Info</button>
+                <br><a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank">
+                    <button class="info-button">View on Google Maps</button>
+                </a>
             </div>
         `);
         infowindow.open(map, marker);
@@ -135,7 +137,6 @@ function displaySearchResults(restaurants) {
             photoUrl = 'default-image.jpg'; // I need to change
         }
 
-        // Filter cuisine types and turns them into text
         const cuisineTypes = restaurant.types.filter(type =>
             !['point_of_interest', 'establishment'].includes(type)
         );
@@ -148,8 +149,8 @@ function displaySearchResults(restaurants) {
         <div class="result-item-details">
             <strong>${index + 1}. ${restaurant.name}</strong>
             <div class="star-rating">${starRatingHtml}</div>
-            <div>Cuisine: ${cuisineText}</div>
-            <div>Address: ${restaurant.vicinity}</div>
+            <div class ='cuisine'>Cuisine: ${cuisineText}</div>
+            <div class='address' >Address: ${restaurant.vicinity}</div>
             <button class="info-button" data-place-id="${restaurant.place_id}">More Info</button>
         </div>
     `;
@@ -162,12 +163,26 @@ function displaySearchResults(restaurants) {
             showPopup(placeId);
         });
     });
+}
 
-function showPopup(placeId) {
+    function showPopup(placeId) {
     service.getDetails({ placeId: placeId }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             const popup = document.getElementById("restaurant-popup");
             const popupDetails = document.getElementById("popup-details");
+
+            let reviewsHtml = '';
+            if (place.reviews && place.reviews.length > 0) {
+                reviewsHtml = place.reviews.map(review => `
+                    <div class="review">
+                        <strong>${review.author_name}</strong>
+                        <div class="star-rating">${getStarRating(review.rating)}</div>
+                        <p>${review.text}</p>
+                    </div>
+                `).join('');
+            } else {
+                reviewsHtml = '<p>No reviews available.</p>';
+            }
 
             popupDetails.innerHTML = `
                 <h2>${place.name}</h2>
@@ -175,6 +190,13 @@ function showPopup(placeId) {
                 <p>Phone: ${place.formatted_phone_number || 'N/A'}</p>
                 <p>Rating: ${place.rating || 'N/A'}</p>
                 <p>Website: ${place.website ? `<a href="${place.website}" target="_blank">${place.website}</a>` : 'N/A'}</p>
+                <br><a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank">
+                    <button class="info-button">View on Google Maps</button>
+                </a>
+                <h3>Reviews:</h3>
+                <div class="reviews" style="max-height: 200px; overflow-y: auto;">
+                    ${reviewsHtml}
+                </div>
                 <button class="close-popup-btn">Close</button>
             `;
 
@@ -182,19 +204,17 @@ function showPopup(placeId) {
             popup.classList.add("show");
 
             document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
-            // Create the close button with the event listener attached directly
             const closeButton = document.createElement('button');
             closeButton.className = "close-popup-btn";
             closeButton.textContent = "Close";
             closeButton.addEventListener('click', closePopup);
             popup.querySelector('.popup-content').appendChild(closeButton);
         }
-    });
-}
+        });
+    }
 
 function closePopup() {
     const popup = document.getElementById('restaurant-popup');
     popup.classList.add('hidden');
     popup.classList.remove('show');
-}
 }
