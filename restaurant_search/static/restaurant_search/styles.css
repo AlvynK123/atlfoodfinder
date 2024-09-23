@@ -152,24 +152,26 @@ main {
 
 .result-item-details strong {
     font-size: 25px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .star-rating i {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 8px;
+    margin-bottom: 8px;
     font-size: 1.5em;
     color: #ffd95a;
     margin-right: 2px;
 }
 
 .cuisine {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 .address {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 .info-button {
