@@ -149,8 +149,8 @@ function displaySearchResults(restaurants) {
         <div class="result-item-details">
             <strong>${index + 1}. ${restaurant.name}</strong>
             <div class="star-rating">${starRatingHtml}</div>
-            <div>Cuisine: ${cuisineText}</div>
-            <div>Address: ${restaurant.vicinity}</div>
+            <div class ='cuisine'>Cuisine: ${cuisineText}</div>
+            <div class='address' >Address: ${restaurant.vicinity}</div>
             <button class="info-button" data-place-id="${restaurant.place_id}">More Info</button>
         </div>
     `;
