@@ -190,6 +190,9 @@ function displaySearchResults(restaurants) {
                 <p>Phone: ${place.formatted_phone_number || 'N/A'}</p>
                 <p>Rating: ${place.rating || 'N/A'}</p>
                 <p>Website: ${place.website ? `<a href="${place.website}" target="_blank">${place.website}</a>` : 'N/A'}</p>
+                <br><a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank">
+                    <button class="info-button">View on Google Maps</button>
+                </a>
                 <h3>Reviews:</h3>
                 <div class="reviews" style="max-height: 200px; overflow-y: auto;">
                     ${reviewsHtml}
