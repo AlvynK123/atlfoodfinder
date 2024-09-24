@@ -25,18 +25,18 @@ function initMap() {
 
     document.getElementById("search-form").addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent page reload
-
+    
         const name = document.getElementById("name").value;
-        const cuisine = document.getElementById("cuisine").value;
         const locationInput = document.getElementById("location").value;
+        const cuisine = document.getElementById("cuisine").value; // Added this line to get the cuisine value
         const minRating = document.getElementById("min-rating").value; // Get the selected minimum rating
-
+    
         if (!name && !cuisine && !locationInput) {
             alert("Please provide at least one search parameter.");
             return;
         }
-
-        searchNearbyRestaurants(location, name, cuisine, minRating);
+    
+        searchNearbyRestaurants(location, name, cuisine, minRating); // Pass the cuisine to the search function
     });
 }
 
@@ -45,7 +45,7 @@ function searchNearbyRestaurants(location, name, cuisine, minRating) {
         location: location,
         radius: '10000',
         type: ['restaurant'],
-        keyword: name + ' ' + cuisine
+        keyword: `${name} ${cuisine}`
     };
 
     service.nearbySearch(request, (results, status) => {

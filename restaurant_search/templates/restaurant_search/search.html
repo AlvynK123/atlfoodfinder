@@ -22,7 +22,23 @@
             <div class="search-bar">
                 <form id="search-form">
                     <input type="search" id="name" name="name" placeholder="Restaurant Name">
-                    <input type="search" id="cuisine" name="cuisine" placeholder="Cuisine Type">
+
+                    <select id="cuisine" name="cuisine">
+                        <option value="">Select Cuisine</option>
+                        <option value="Asian">Asian</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Mediterranean">Mediterranean</option>
+                        <option value="Mexican">Mexican</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Korean">Korean</option>
+                        <option value="Thai">Thai</option>
+                        <option value="Japanese">Japanese</option>
+
+                        
+                        <!-- Add more options as needed -->
+                    </select>
+
                     <input type="search" id="location" name="location" placeholder="Location">
                     
                     <!-- Rating filter dropdown -->
@@ -55,7 +71,25 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-container">
-        <div id="search-results"></div>
+        <div id="search-results">
+            <!-- Loop through restaurants and display them -->
+            {% for restaurant in restaurants %}
+                <div class="restaurant">
+                    <h3>{{ forloop.counter }}. {{ restaurant.name }}</h3>
+                    <p><strong>Cuisine:</strong> {{ restaurant.cuisine }} - <strong>Location:</strong> {{ restaurant.location }}</p>
+                    
+                    <!-- Add Favorite Button -->
+                    <form action="{% url 'toggle_favorite' restaurant.id %}" method="POST">
+                        {% csrf_token %}
+                        {% if restaurant in user_favorites %}
+                            <button type="submit" class="btn btn-danger">Remove from Favorites</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                        {% endif %}
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
         <div id="map"></div>
     </main>
 
