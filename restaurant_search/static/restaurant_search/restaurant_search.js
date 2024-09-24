@@ -6,6 +6,7 @@ let markers = [];
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof google !== 'undefined') {
         initMap();
+        getUserLocation();
     } else {
         console.error("Google Maps API is not available.");
     }
@@ -53,6 +54,7 @@ function searchNearbyRestaurants(location, name, cuisine, minRating) {
             
             // Filter results based on minimum rating
             const filteredResults = results.filter(restaurant => {
+
                 return (restaurant.rating || 0) >= minRating;
             });
 
@@ -115,6 +117,22 @@ function getStarRating(rating) {
         }
     }
     return starHtml;
+}
+
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            map.setCenter(userLocation);
+        }, () => {
+            console.error('Error fetching geolocation.');
+        });
+    } else {
+        console.error('Geolocation not supported by this browser.');
+    }
 }
 
 function displaySearchResults(restaurants) {
