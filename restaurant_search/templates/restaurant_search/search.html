@@ -67,28 +67,34 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-container">
+        <!-- Search Results Section -->
         <div id="search-results">
             <!-- Loop through restaurants and display them -->
             {% for restaurant in restaurants %}
-                <div class="restaurant">
-                    <h3>{{ forloop.counter }}. {{ restaurant.name }}</h3>
-                    <p><strong>Cuisine:</strong> {{ restaurant.cuisine }} - <strong>Location:</strong> {{ restaurant.location }}</p>
-                    
-                    <!-- Add Favorite Button -->
-                    <form action="{% url 'toggle_favorite' restaurant.id %}" method="POST">
-                        {% csrf_token %}
-                        {% if restaurant in user_favorites %}
-                            <button type="submit" class="btn btn-danger">Remove from Favorites</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-primary">Add to Favorites</button>
-                        {% endif %}
-                    </form>
-                </div>
+            <div class="restaurant" data-restaurant-id="{{ restaurant.id }}">
+                <!-- Restaurant Name -->
+                <h3>{{ forloop.counter }}. {{ restaurant.name }}</h3>
+                
+                <!-- Restaurant Details -->
+                <p><strong>Cuisine:</strong> {{ restaurant.cuisine }} - <strong>Location:</strong> {{ restaurant.location }}</p>
+    
+                <!-- Add/Remove Favorite Button -->
+                <form action="{% url 'toggle_favorite' restaurant.id %}" method="POST">
+                    {% csrf_token %}
+                    {% if restaurant.id in user_favorites %}
+                        <button type="submit" class="btn btn-danger">Remove from Favorites</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                    {% endif %}
+                </form>                
+            </div>
             {% endfor %}
         </div>
+    
+        <!-- Map Section -->
         <div id="map"></div>
     </main>
-
+    
     <!-- POPUP MODAL FOR RESTAURANT DETAILS -->
     <div id="restaurant-popup" class="popup hidden">
         <div class="popup-content">

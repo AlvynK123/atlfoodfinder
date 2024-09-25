@@ -77,3 +77,7 @@ def profile(request):
         'user': request.user,
         'favorites': favorites
     })
+
+def profile_view(request):
+    user_favorites = UserFavorite.objects.filter(user=request.user)
+    return render(request, 'profile.html', {'user_favorites': user_favorites})
