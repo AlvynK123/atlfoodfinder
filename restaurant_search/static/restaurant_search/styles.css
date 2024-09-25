@@ -91,7 +91,7 @@ header {
     text-decoration: none;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 13
+    font-size: 13px;
 }
 
 .btn {
@@ -233,14 +233,17 @@ main {
 }
 
 .popup .close-popup-btn {
+    padding: 3px 5px;
     position: absolute;
     top: 10px;
     right: 15px;
-    font-size: 20px;
+    font-size: 15px;
     cursor: pointer;
     border: none;
     background-color: #00b4d8;
     color: white;
+    border-radius: 4px;
+
 }
 
 .popup.hidden {
