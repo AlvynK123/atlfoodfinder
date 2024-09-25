@@ -217,6 +217,11 @@ main {
     opacity: 1;
 }
 
+.popup .reviews {
+    max-height: 200px; /* Adjust as needed */
+    overflow-y: auto;
+}
+
 .popup .popup-content {
     background-color: #fff;
     padding: 20px;
@@ -244,4 +249,28 @@ main {
 
 #min-rating {
     width: 180;
+}
+
+.popup.reviews {
+    max-height: 400px; /* Increase the max-height if needed */
+    overflow-y: auto;
+}
+
+.popup.review {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.popup.review strong {
+    display: block;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.popup .star-rating {
+    margin-bottom: 5px;
+}
+
+.popup .review p {
+    margin: 0;
 }
