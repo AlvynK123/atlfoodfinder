@@ -232,7 +232,7 @@ function displaySearchResults(restaurants) {
         if (restaurant.photos && restaurant.photos.length > 0) {
             photoUrl = restaurant.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
         } else {
-            photoUrl = 'default-image.jpg'; // I need to change
+            photoUrl = 'default-image.jpg'; // Replace with actual default image if necessary
         }
 
         const cuisineTypes = restaurant.types.filter(type =>
@@ -315,7 +315,7 @@ function showPopup(placeId) {
                 <p>Phone: ${place.formatted_phone_number || 'N/A'}</p>
                 <p>Rating: ${place.rating || 'N/A'}</p>
                 <p>Website: ${place.website ? `<a href="${place.website}" target="_blank">${place.website}</a>` : 'N/A'}</p>
-                <br><a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" target="_blank">
+                <br><a href="https://www.google.com/maps/place/?q=place_id=${place.place_id}" target="_blank">
                     <button class="info-button">View on Google Maps</button>
                 </a>
                 <h3>Reviews:</h3>
@@ -329,14 +329,9 @@ function showPopup(placeId) {
             popup.classList.add("show");
 
             document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
-            const closeButton = document.createElement('button');
-            closeButton.className = "close-popup-btn";
-            closeButton.textContent = "Close";
-            closeButton.addEventListener('click', closePopup);
-            popup.querySelector('.popup-content').appendChild(closeButton);
         }
-        });
-    }
+    });
+}
 
 function closePopup() {
     const popup = document.getElementById('restaurant-popup');
