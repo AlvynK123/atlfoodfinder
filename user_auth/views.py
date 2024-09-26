@@ -46,34 +46,17 @@ def logoutUser(request):
 
 # Search view to display restaurants
 def search_view(request):
-    restaurants = Restaurant.objects.all()  # Fetch all restaurants
-    user_favorites = request.user.profile.favorites.all() if request.user.is_authenticated else []
+    # Fetch all restaurants without fetching favorites (handled client-side now)
+    restaurants = Restaurant.objects.all()  
     
     return render(request, 'restaurant_search/search.html', {
         'restaurants': restaurants,
-        'user_favorites': user_favorites
+        # 'user_favorites': handled client-side, no longer needed in the backend
     })
 
-# Handles the toggling of favorite status
-@login_required
-def toggle_favorite_view(request, restaurant_id):
-    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
-    profile = request.user.profile
-
-    if restaurant in profile.favorites.all():
-        profile.favorites.remove(restaurant)  # Remove from favorites
-    else:
-        profile.favorites.add(restaurant)  # Add to favorites
-
-    return redirect('search')  # Redirect back to the search view after the toggle
-
-# Profile view to display user details and favorite restaurants
+# Profile view to display user details
 @login_required
 def profile(request):
-    profile = request.user.profile
-    favorites = profile.favorites.all()  # Get all favorite restaurants for the user
-    
     return render(request, 'user_auth/profile.html', {
-        'user': request.user,
-        'favorites': favorites
+        'user': request.user
     })
