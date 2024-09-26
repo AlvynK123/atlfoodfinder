@@ -21,19 +21,33 @@
 
             <div class="search-bar">
                 <form id="search-form">
-                    <input type="search" id="name" name="name" placeholder="Restaurant Name">
-                    <input type="search" id="cuisine" name="cuisine" placeholder="Cuisine Type">
+                    <input type="search" id="name" name="name" placeholder="Restaurant">
+
+                    <select id="cuisine" name="cuisine">
+                        <option value="">Select Cuisine</option>
+                        <option value="Asian">Asian</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Mediterranean">Mediterranean</option>
+                        <option value="Mexican">Mexican</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Korean">Korean</option>
+                        <option value="Thai">Thai</option>
+                        <option value="Japanese">Japanese</option>
+
+                        
+                        <!-- Add more options as needed -->
+                    </select>
+
                     <input type="search" id="location" name="location" placeholder="Location">
                     
                     <!-- Rating filter dropdown -->
                     <select id="min-rating" name="min-rating">
-                        <option value="0">All Ratings</option>
-                        <option value="1">1 Star & above</option>
-                        <option value="2">2 Stars & above</option>
-                        <option value="3">3 Stars & above</option>
-                        <option value="4">4 Stars & above</option>
-                        <option value="5">5 Stars only</option>
+                        <option value="0">Sort By</option>
+                        <option value="1">Most Popular</option>
+                        <option value="2">Highest Rated</option>
                     </select>
+                    
 
                     <button type="submit"><img src="{% static 'images/search.png' %}" alt="Search"></button>
                 </form>
@@ -49,11 +63,11 @@
                 {% endif %}
             </div>
         </div>
-        <hr>
     </header>
 
     <!-- MAIN CONTENT -->
     <main class="main-container">
+        <!-- Search Results Section -->
         <div id="search-results">
             <!-- Loop through restaurants and display them -->
             {% for restaurant in restaurants %}
@@ -64,9 +78,11 @@
                 </div>
             {% endfor %}
         </div>
+    
+        <!-- Map Section -->
         <div id="map"></div>
     </main>
-
+    
     <!-- POPUP MODAL FOR RESTAURANT DETAILS -->
     <div id="restaurant-popup" class="popup hidden">
         <div class="popup-content">

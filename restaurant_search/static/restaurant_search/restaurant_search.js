@@ -2,17 +2,20 @@ let map;
 let service;
 let infowindow;
 let markers = [];
+let autocomplete; 
+let resultsPage = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof google !== 'undefined') {
         initMap();
+        getUserLocation();
     } else {
         console.error("Google Maps API is not available.");
     }
 });
 
 function initMap() {
-    const location = { lat: 33.7756, lng: -84.3963 };
+    const location = { lat: 33.749, lng: -84.388 };
 
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 11,
@@ -22,36 +25,70 @@ function initMap() {
     infowindow = new google.maps.InfoWindow();
     service = new google.maps.places.PlacesService(map);
 
+    const locationInput = document.getElementById("location");
+    autocomplete = new google.maps.places.Autocomplete(locationInput, {
+        types: ['geocode'], // Search for addresses, neighborhoods, postal codes
+        componentRestrictions: { country: "us" }, // Restrict to US
+    });
+    
+    // Bias autocomplete results to Atlanta, GA
+    autocomplete.setBounds(new google.maps.LatLngBounds(
+        { lat: 33.5, lng: -84.6 }, // Southwest boundary
+        { lat: 34.0, lng: -84.0 }  // Northeast boundary
+    ));
+    
+    autocomplete.addListener('place_changed', onPlaceChanged);
+
     document.getElementById("search-form").addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent page reload
-
+    
         const name = document.getElementById("name").value;
         const cuisine = document.getElementById("cuisine").value;
-        const locationInput = document.getElementById("location").value;
-        const minRating = document.getElementById("min-rating").value; // Get the selected minimum rating
-
+        const minRating = document.getElementById("min-rating").value;
+        const locationInputValue = locationInput.value;
+    
         if (!name && !cuisine && !locationInput) {
             alert("Please provide at least one search parameter.");
             return;
+        }
+
+        if (locationInputValue) {
+            const selectedPlace = autocomplete.getPlace();
+            const location = selectedPlace ? selectedPlace.geometry.location : atlanta;
+            searchNearbyRestaurants(location, name, cuisine, minRating);
+        } else {
+            getUserLocation(name, cuisine, minRating);
         }
 
         searchNearbyRestaurants(location, name, cuisine, minRating);
     });
 }
 
+function onPlaceChanged() {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) {
+        alert("No details available for input: '" + place.name + "'");
+        return;
+    }
+
+    map.setCenter(place.geometry.location);
+    map.setZoom(13);
+}
+
 function searchNearbyRestaurants(location, name, cuisine, minRating) {
+    resultsPage = 0;
+    
     const request = {
         location: location,
-        radius: '10000',
+        radius: '10000', 
         type: ['restaurant'],
-        keyword: name + ' ' + cuisine
+        keyword: `${name} ${cuisine}`
     };
 
     service.nearbySearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             clearMarkers();
-            
-            // Filter results based on minimum rating
+
             const filteredResults = results.filter(restaurant => {
                 return (restaurant.rating || 0) >= minRating;
             });
@@ -61,15 +98,32 @@ function searchNearbyRestaurants(location, name, cuisine, minRating) {
                 return;
             }
 
-            filteredResults.forEach((place, index) => {
+            const sortOrder = document.getElementById("min-rating").value;
+            let sortedResults;
+
+            sortedResults = filteredResults;
+            
+            if (sortOrder === 0 || sortOrder == 1) {
+                sortedResults = filteredResults;
+            } else if (sortOrder == 2) {
+                sortedResults = filteredResults.sort((a, b) => b.rating - a.rating);
+            } 
+
+            sortedResults.forEach((place, index) => {
                 createMarker(place, index + 1);
             });
 
-            displaySearchResults(filteredResults);
+            displaySearchResults(sortedResults);
+
         } else {
             alert("No restaurants found.");
         }
     });
+}
+
+function clearMarkers() {
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
 }
 
 function createMarker(place, number) {
@@ -145,6 +199,22 @@ function isFavorite(placeId) {
     return favorites.some(fav => fav.place_id === placeId);
 }
 
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            map.setCenter(userLocation);
+        }, () => {
+            console.error('Error fetching geolocation.');
+        });
+    } else {
+        console.error('Geolocation not supported by this browser.');
+    }
+}
+
 function displaySearchResults(restaurants) {
     const resultsDiv = document.getElementById("search-results");
     resultsDiv.innerHTML = '';
@@ -211,14 +281,22 @@ function displaySearchResults(restaurants) {
 }
 
 function showPopup(placeId) {
-    service.getDetails({ placeId: placeId }, (place, status) => {
+
+    const request = {
+        placeId: placeId,
+        fields: ['name', 'formatted_address', 'formatted_phone_number', 'rating', 'website', 'reviews'],
+        reviews_sort: 'most_relevant', // Optional: to sort the reviews in a specific way
+        reviews_max: 10 // Request up to 10 reviews
+    };
+
+    service.getDetails(request, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             const popup = document.getElementById("restaurant-popup");
             const popupDetails = document.getElementById("popup-details");
 
             let reviewsHtml = '';
             if (place.reviews && place.reviews.length > 0) {
-                reviewsHtml = place.reviews.map(review => `
+                reviewsHtml = place.reviews.slice(0, 10).map(review => `
                     <div class="review">
                         <strong>${review.author_name}</strong>
                         <div class="star-rating">${getStarRating(review.rating)}</div>
@@ -228,6 +306,7 @@ function showPopup(placeId) {
             } else {
                 reviewsHtml = '<p>No reviews available.</p>';
             }
+
 
             popupDetails.innerHTML = `
                 <h2>${place.name}</h2>
