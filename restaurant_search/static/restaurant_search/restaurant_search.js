@@ -329,6 +329,11 @@ function showPopup(placeId) {
             popup.classList.add("show");
 
             document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
+            const closeButton = document.createElement('button');
+            closeButton.className = "close-popup-btn";
+            closeButton.textContent = "Close";
+            closeButton.addEventListener('click', closePopup);
+            popup.querySelector('.popup-content').appendChild(closeButton);
         }
     });
 }
