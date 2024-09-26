@@ -10,5 +10,4 @@ urlpatterns = [
 
     # Search and restaurant favorite routes
     path('search/', views.search_view, name='search'),
-    path('favorite/<int:restaurant_id>/', views.toggle_favorite_view, name='toggle_favorite'),
 ]

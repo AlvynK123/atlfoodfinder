@@ -31,32 +31,40 @@
                 <div class="profile_container">
                     <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ user.email }}</p>
                 </div>
-            </div>
-
-            <!-- Favorite Restaurants Card -->
-            <div class="favorites_card">
-                <h4><i class="fas fa-utensils"></i> Your Favorite Restaurants:</h4>
-                {% if favorites %}
-                    <ul class="list-unstyled">
-                        {% for restaurant in favorites %}
-                            <li class="restaurant_item">
-                                <strong>{{ restaurant.name }}</strong><br>
-                                Cuisine: {{ restaurant.cuisine }}<br>
-                                Location: {{ restaurant.location }}<br>
-            
-                                <!-- Add Remove from Favorites Button -->
-                                <form action="{% url 'toggle_favorite' restaurant.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm">Remove from Favorites</button>
-                                </form>
-                            </li>
-                        {% endfor %}
+                <div class="favorites_list">
+                    <h4><i class="fas fa-utensils"></i> Your Favorite Restaurants:</h4>
+                    <ul id="favorites-list" class="list-unstyled">
+                        <!-- JavaScript will populate this with restaurants from localStorage -->
                     </ul>
-                {% else %}
-                    <p>No favorite restaurants yet.</p>
-                {% endif %}
+                </div>
+                <a href="{% url 'logout' %}" class="btn btn-danger mt-4">Log Out</a>
             </div>
         </div>
-    </main>
+    </div>
+
+    <script>
+        // Function to get favorites from localStorage and display them
+        function loadFavorites() {
+            const favoritesList = document.getElementById('favorites-list');
+            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<p>No favorite restaurants yet.</p>';
+            } else {
+                favoritesList.innerHTML = '';
+                favorites.forEach((restaurant) => {
+                    const li = document.createElement('li');
+                    li.className = 'restaurant_item';
+                    li.innerHTML = `<strong>${restaurant.name}</strong><br>
+                                    Cuisine: ${restaurant.cuisine}<br>
+                                    Location: ${restaurant.location}`;
+                    favoritesList.appendChild(li);
+                });
+            }
+        }
+
+        // Call the function on page load
+        document.addEventListener('DOMContentLoaded', loadFavorites);
+    </script>
 </body>
 </html>
