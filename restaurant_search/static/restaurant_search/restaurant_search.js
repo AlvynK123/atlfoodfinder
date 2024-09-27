@@ -171,27 +171,54 @@ function getStarRating(rating) {
     return starHtml;
 }
 
-// Function to add/remove favorites
+// Function to add/remove favorites with detailed information
 function toggleFavorite(restaurant) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     const index = favorites.findIndex(fav => fav.place_id === restaurant.place_id);
-    
+
     if (index !== -1) {
-        favorites.splice(index, 1); // Remove from favorites
+        // If the restaurant is already in favorites, remove it
+        favorites.splice(index, 1);
         alert(`${restaurant.name} removed from favorites.`);
     } else {
-        favorites.push({
-            name: restaurant.name,
-            cuisine: restaurant.cuisine || 'Cuisine not available',
-            location: restaurant.vicinity,
-            place_id: restaurant.place_id
-        });
-        alert(`${restaurant.name} added to favorites.`);
-    }
+        // Extract cuisine types from the restaurant's types array
+        const cuisineTypes = restaurant.types ? restaurant.types.filter(type =>
+            !['point_of_interest', 'establishment'].includes(type)
+        ) : [];
+        
+        const cuisine = cuisineTypes.length > 0 ? cuisineTypes.map(type => type.replace(/_/g, ' ')).join(', ') : 'Cuisine not available';
 
-    localStorage.setItem('favorites', JSON.stringify(favorites));
+        // Fetch additional details including reviews and website from Google Places API
+        const service = new google.maps.places.PlacesService(document.createElement('div'));
+        const request = {
+            placeId: restaurant.place_id,
+            fields: ['name', 'formatted_address', 'rating', 'website', 'reviews', 'photos']
+        };
+
+        service.getDetails(request, (place, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                favorites.push({
+                    name: place.name,
+                    cuisine: cuisine,  // Use extracted cuisine information
+                    location: place.formatted_address || restaurant.vicinity || 'Location not available',
+                    imageUrl: (place.photos && place.photos.length > 0) ? place.photos[0].getUrl({ maxWidth: 16000, maxHeight: 1200 }) : 'https://www.groupestate.gr/images/joomlart/demo/default.jpg',
+                    rating: place.rating || 0,
+                    place_id: restaurant.place_id,
+                    website: place.website || 'Website not available',
+                    reviews: place.reviews || []  // Save reviews for later display
+                });
+
+                alert(`${place.name} added to favorites.`);
+                // Save the updated favorites list back to localStorage
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+            } else {
+                console.error('Error fetching restaurant details:', status);
+            }
+        });
+    }
 }
+
 
 // Function to check if restaurant is in favorites
 function isFavorite(placeId) {
@@ -230,9 +257,9 @@ function displaySearchResults(restaurants) {
 
         let photoUrl = '';
         if (restaurant.photos && restaurant.photos.length > 0) {
-            photoUrl = restaurant.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
+            photoUrl = restaurant.photos[0].getUrl({ maxWidth: 800, maxHeight: 600 });
         } else {
-            photoUrl = 'default-image.jpg'; // Replace with actual default image if necessary
+            photoUrl = 'https://www.groupestate.gr/images/joomlart/demo/default.jpg'; //default iamge
         }
 
         const cuisineTypes = restaurant.types.filter(type =>
@@ -249,11 +276,13 @@ function displaySearchResults(restaurants) {
         <div class="result-item-details">
             <strong>${index + 1}. ${restaurant.name}</strong>
             <div class="star-rating">${starRatingHtml}</div>
-            <div class ='cuisine'>Cuisine: ${cuisineText}</div>
-            <div class='address' >Address: ${restaurant.vicinity}</div>
+            <div class="cuisine">Cuisine: ${cuisineText}</div>
+            <div class="address">Address: ${restaurant.vicinity}</div>
+
             <button class="info-button" data-place-id="${restaurant.place_id}">More Info</button>
+
             <button class="favorite-button ${isFav ? 'favorited' : ''}" data-place-id="${restaurant.place_id}">
-                ${isFav ? 'Remove from Favorites' : 'Add to Favorites'}
+                <i class="fa${isFav ? ' fa-solid' : ' fa-regular'} fa-heart"></i> <!-- Heart Icon -->
             </button>
         </div>
     `;
@@ -275,11 +304,13 @@ function displaySearchResults(restaurants) {
 
             // Update the button state
             this.classList.toggle('favorited');
-            this.textContent = this.classList.contains('favorited') ? 'Remove from Favorites' : 'Add to Favorites';
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-solid');
+            icon.classList.toggle('fa-regular');
         });
     });
-
 }
+
 
 function showPopup(placeId) {
 
@@ -322,18 +353,12 @@ function showPopup(placeId) {
                 <div class="reviews" style="max-height: 200px; overflow-y: auto;">
                     ${reviewsHtml}
                 </div>
-                <button class="close-popup-btn">Close</button>
             `;
 
             popup.classList.remove("hidden");
             popup.classList.add("show");
 
             document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
-            const closeButton = document.createElement('button');
-            closeButton.className = "close-popup-btn";
-            closeButton.textContent = "Close";
-            closeButton.addEventListener('click', closePopup);
-            popup.querySelector('.popup-content').appendChild(closeButton);
         }
     });
 }

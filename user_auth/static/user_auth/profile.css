@@ -1,20 +1,21 @@
 html, body {
-    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     overflow-y: auto;
     margin: 0;
     padding: 0;
     height: 100%;
+    background-color: #f4f4f4;
 }
 
 /* Header Styling */
 header {
-    position: fixed; 
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
     background-color: #ffffff;
-    height: 110px; 
+    height: 110px; /* Ensure the header height is consistent */
     width: 100%;
     display: flex;
     align-items: center;
@@ -29,40 +30,54 @@ header {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    position: relative;
 }
 
 .logo img {
-    max-width: 140px;
+    max-width: 150px; 
     height: auto;
 }
 
-/* Button Group Styling */
+/* welcome message */
+.user-info {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.welcome-message {
+    font-size: 22px;
+    color: #333;
+    margin: 0;
+    font-weight: bold;
+}
+
+.user-email {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
 .buttons {
     display: flex;
     gap: 15px;
-    margin-left: auto;
     align-items: center;
 }
 
 .btn, .btn2 {
-    padding: 7px 15px;
+    padding: 8px 16px;
     text-decoration: none;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 14px;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .btn {
-    background-color: #d82400;
-    color: #fff;
-    border: 1px solid #d82400;
-}
-
-.btn:hover {
-    background-color: #e3654c;
-    border: 1px solid #e3654c;
-    color: #fff;
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #d2d2d2;
 }
 
 .btn2 {
@@ -71,67 +86,263 @@ header {
     border: 1px solid #00b4d8;
 }
 
+.btn:hover {
+    background-color: #d2d2d2;
+}
+
 .btn2:hover {
     background-color: #90e0ef;
     border: 1px solid #90e0ef;
-    color: #fff;
 }
 
-/* Main Content Styling */
+
 main {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: calc(100vh - 110px);
-    padding-top: 110px;
-    flex-direction: column;
-    gap: 30px;
+    min-height: 100vh;
+    padding-top: 120px; /* Adjust padding top to ensure space between header and content */
+    padding-bottom: 40px;
+    gap: 40px;
+    background-color: #f9f9f9;
 }
 
-/* Profile Cards Container */
-.profile-cards {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
 
-/* Shared Card Styles */
-.user_card, .favorites_card {
-    max-width: 500px;
+
+.favorites_list {
+    max-width: 1000px;
     width: 100%;
     background: #fff;
-    padding: 20px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    text-align: center;
-    position: relative;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
 }
 
-/* Specific Styling for Each Card */
-.user_card h3 {
+.favorites_list h4 {
     font-weight: 600;
+    font-size: 22px;
     margin-bottom: 20px;
     color: #333;
 }
 
-.profile_container p {
-    font-size: 16px;
-    margin: 10px 0;
-}
-
-.favorites_card h4 {
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-/* Favorite Restaurants List */
 .restaurant_item {
-    background-color: #f7ba5b;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-start;
+    gap: 30px; 
 }
 
+.restaurant-img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0; 
+}
+
+.result-item-details {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 15px;
+}
+
+.result-item-details strong {
+    font-size: 22px;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+.star-rating i {
+    font-size: 18px;
+    color: #ffd95a;
+    margin-right: 2px;
+}
+
+.review-section {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    width: 100%; 
+}
+
+.review-textarea {
+    width: 100%; 
+    margin-bottom: 10px; 
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.submit-review-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 20px;
+    margin-top: -100px;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.submit-review-button:hover {
+    background-color: #218838;
+}
+
+.info-button {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px 10px; 
+    background-color: #00b4d8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px; 
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); 
+}
+
+.info-button:hover {
+    background-color: #90e0ef;
+}
+
+/* Popup Modal */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.popup.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.popup .popup-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    text-align: left;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    max-height: 80%;
+}
+
+.popup .close-popup-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.popup .close-popup-btn:hover {
+    color: #cc0000;
+}
+
+.popup h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.popup p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.popup h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.popup .reviews {
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.popup .review {
+    margin-bottom: 20px;
+}
+
+.popup .review strong {
+    font-size: 18px;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+.popup .star-rating i {
+    color: #ffd95a;
+    margin-right: 3px;
+    font-size: 1.2em;
+}
+
+.popup .review p {
+    color: #666;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.popup a {
+    color: #00b4d8;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.popup a:hover {
+    text-decoration: underline;
+}
+
+.favorite-button {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px 10px; 
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px; 
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); 
+}
+
+.favorite-button:hover {
+    background-color: #cc0000; 
+    color: white;
+}

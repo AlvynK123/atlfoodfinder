@@ -2,48 +2,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <link rel="stylesheet" href="{% static 'user_auth/profile.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places" async defer></script>
 </head>
 <body>
-    <!-- Header with logo, same structure as search header -->
-    <header class="header">
+    <!-- Header -->
+    <header>
         <div class="container">
             <div class="logo">
                 <img src="{% static 'images/logo.png' %}" alt="Logo">
             </div>
-
+    
+            <!-- Welcome message with username and email -->
+            <div class="user-info">
+                <p class="welcome-message">Welcome, {{ user.username }}!</p>
+                <p class="user-email">
+                    <i class="fas fa-envelope"></i> {{ user.email }}
+                </p>
+            </div>
+    
             <div class="buttons">
-                <a href="{% url 'search' %}" class="btn btn2">Search</a>
-                <a href="{% url 'logout' %}" class="btn btn1">Log Out</a>
+                <a href="{% url 'search' %}" class="btn">Search</a>
+                <a href="{% url 'logout' %}" class="btn2">Log Out</a>
             </div>
         </div>
     </header>
-
+    
     <!-- Main Profile Section -->
     <main class="main-container">
-        <div class="profile-cards">
-            <!-- User Info Card -->
-            <div class="user_card">
-                <h3 id="form-title"><i class="fas fa-user-circle"></i> Profile: {{ user.username }}</h3>
-                <div class="profile_container">
-                    <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ user.email }}</p>
-                </div>
-                <div class="favorites_list">
-                    <h4><i class="fas fa-utensils"></i> Your Favorite Restaurants:</h4>
-                    <ul id="favorites-list" class="list-unstyled">
-                        <!-- JavaScript will populate this with restaurants from localStorage -->
-                    </ul>
-                </div>
-                <a href="{% url 'logout' %}" class="btn btn-danger mt-4">Log Out</a>
+        <div class="favorites_list">
+            <h4><i class="fas fa-utensils"></i> Your Favorite Restaurants</h4>
+            <div id="favorites-list" class="restaurant-list">
+                <!-- JavaScript will populate this with restaurants from localStorage -->
             </div>
+        </div>
+    </main>
+
+    <!-- POPUP MODAL FOR RESTAURANT DETAILS -->
+    <div id="restaurant-popup" class="popup hidden">
+        <div class="popup-content">
+            <button class="close-popup-btn">&times;</button>
+            <div id="popup-details"></div>
         </div>
     </div>
 
     <script>
-        // Function to get favorites from localStorage and display them
+        // Function to generate star rating HTML
+        function getStarRating(rating) {
+            const maxStars = 5;
+            let starHtml = '<div class="star-rating">';
+
+            for (let i = 1; i <= maxStars; i++) {
+                if (i <= rating) {
+                    starHtml += '<i class="fa-solid fa-star" style="color: #ffd95a;"></i>'; // Full star
+                } else if (i - rating <= 0.5) {
+                    starHtml += '<i class="fa-regular fa-star-half-stroke" style="color: #ffd95a;"></i>'; // Half star
+                } else {
+                    starHtml += '<i class="fa-regular fa-star" style="color: #ffd95a;"></i>'; // Empty star
+                }
+            }
+            return starHtml;
+        }
+
         function loadFavorites() {
             const favoritesList = document.getElementById('favorites-list');
             const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -52,18 +76,165 @@
                 favoritesList.innerHTML = '<p>No favorite restaurants yet.</p>';
             } else {
                 favoritesList.innerHTML = '';
-                favorites.forEach((restaurant) => {
-                    const li = document.createElement('li');
-                    li.className = 'restaurant_item';
-                    li.innerHTML = `<strong>${restaurant.name}</strong><br>
-                                    Cuisine: ${restaurant.cuisine}<br>
-                                    Location: ${restaurant.location}`;
-                    favoritesList.appendChild(li);
+                favorites.forEach((restaurant, index) => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'restaurant_item'; // Use the correct class for restaurant item layout
+
+                    // If the image is available, request it with a higher resolution
+                    const photoUrl = restaurant.imageUrl 
+                        ? restaurant.imageUrl
+                        : (restaurant.photos && restaurant.photos.length > 0) 
+                            ? restaurant.photos[0].getUrl({ maxWidth: 1200, maxHeight: 800 }) // Request higher resolution
+                            : 'https://www.groupestate.gr/images/joomlart/demo/default.jpg'; // Default image
+
+                    const starRatingHtml = getStarRating(restaurant.rating || 0);
+                    const cuisineText = restaurant.cuisine || 'Cuisine not available'; // Handle missing cuisine
+
+                    // Display user review if available
+                    const userReview = restaurant.userReview ? `<p><strong>Your Review:</strong> ${restaurant.userReview}</p>` : '<p><strong>Your Review:</strong></p>';
+
+                    resultItem.innerHTML = `
+                        <img class="restaurant-img" src="${photoUrl}" alt="${restaurant.name}">
+                        <div class="result-item-details">
+                            <strong>${index + 1}. ${restaurant.name}</strong>
+                            <div class="star-rating">${starRatingHtml}</div>
+                            <div class="cuisine">Cuisine: ${cuisineText}</div>
+                            <div class="address">Address: ${restaurant.location}</div>
+
+                            <div class="buttons-container">
+                                <button class="info-button" data-place-id="${restaurant.place_id}">More Info</button>
+                                <button class="favorite-button" data-place-id="${restaurant.place_id}">Remove</button>
+                            </div>
+
+                            ${userReview}
+
+                            <!-- Direct Review Section -->
+                            <div class="review-form" id="review-form-${restaurant.place_id}">
+                                <textarea placeholder="Write your review here..." class="review-textarea" id="review-textarea-${restaurant.place_id}"></textarea>
+                                <button class="submit-review-button" data-place-id="${restaurant.place_id}">Submit Review</button>
+                            </div>
+                        </div>
+                    `;
+
+                    favoritesList.appendChild(resultItem);
+                });
+
+                // Attach event listeners for "More Info" buttons
+                document.querySelectorAll('.info-button').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const placeId = this.getAttribute('data-place-id');
+                        showPopup(placeId);
+                    });
+                });
+
+                // Attach event listeners for "Favorite" buttons
+                document.querySelectorAll('.favorite-button').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const placeId = this.getAttribute('data-place-id');
+                        const restaurant = favorites.find(res => res.place_id === placeId);
+                        toggleFavorite(restaurant);
+                        loadFavorites();
+                    });
+                });
+
+                // Attach event listeners for "Submit Review" buttons
+                document.querySelectorAll('.submit-review-button').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const placeId = this.getAttribute('data-place-id');
+                        const reviewText = document.getElementById(`review-textarea-${placeId}`).value.trim();
+                        submitReview(placeId, reviewText);
+                    });
                 });
             }
         }
 
-        // Call the function on page load
+
+        // Function to submit a review for a restaurant and store it in localStorage
+        function submitReview(placeId, reviewText) {
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const restaurant = favorites.find(r => r.place_id === placeId);
+
+            if (restaurant && reviewText) {
+                restaurant.userReview = reviewText; // Add the review to the restaurant object
+                localStorage.setItem('favorites', JSON.stringify(favorites)); // Save the updated list
+                alert('Your review has been submitted!');
+                loadFavorites(); // Reload favorites to show the updated review
+            } else {
+                alert('Review cannot be empty.');
+            }
+        }
+
+        // Function to toggle favorite state (add or remove from localStorage)
+        function toggleFavorite(restaurant) {
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+            const index = favorites.findIndex(fav => fav.place_id === restaurant.place_id);
+
+            if (index !== -1) {
+                favorites.splice(index, 1); // Remove from favorites
+                alert(`${restaurant.name} removed from favorites.`);
+            } else {
+                favorites.push(restaurant);
+                alert(`${restaurant.name} added to favorites.`);
+            }
+
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+        }
+
+        // Function to show the popup with detailed restaurant info, including reviews and website link
+        function showPopup(placeId) {
+            const popup = document.getElementById("restaurant-popup");
+            const popupDetails = document.getElementById("popup-details");
+
+            // Get the restaurant details from localStorage
+            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const restaurant = favorites.find(r => r.place_id === placeId);
+
+            if (restaurant) {
+                // Format the reviews for display
+                let reviewsHtml = '';
+                if (restaurant.reviews && restaurant.reviews.length > 0) {
+                    reviewsHtml = restaurant.reviews.slice(0, 10).map(review => `
+                        <div class="review">
+                            <strong>${review.author_name}</strong>
+                            <div class="star-rating">${getStarRating(review.rating)}</div>
+                            <p>${review.text}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    reviewsHtml = '<p>No reviews available.</p>';
+                }
+
+                const websiteLink = restaurant.website ? `<a href="${restaurant.website}" target="_blank">Visit Website</a>` : 'Website not available';
+
+                // Display all restaurant details, including reviews and website
+                popupDetails.innerHTML = `
+                    <h2>${restaurant.name}</h2>
+                    <p>Address: ${restaurant.location}</p>
+                    <p>Cuisine: ${restaurant.cuisine}</p>
+                    <p>Rating: ${restaurant.rating || 'N/A'}</p>
+                    <p>${websiteLink}</p>
+                    <h3>Reviews:</h3>
+                    <div class="reviews" style="max-height: 200px; overflow-y: auto;">
+                        ${reviewsHtml}
+                    </div>
+                `;
+
+                popup.classList.remove("hidden");
+                popup.classList.add("show");
+            }
+
+            // Close popup
+            document.querySelector('.close-popup-btn').addEventListener('click', closePopup);
+        }
+
+        function closePopup() {
+            const popup = document.getElementById('restaurant-popup');
+            popup.classList.add('hidden');
+            popup.classList.remove('show');
+        }
+
+        // Load favorites on page load
         document.addEventListener('DOMContentLoaded', loadFavorites);
     </script>
 </body>
