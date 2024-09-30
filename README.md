@@ -1,1 +1,6 @@
-Atlanta Food Finder, CS 2340: Team 37
+Atlanta Plates
+
+Developers: Alvyn Kwon, Tracy Xie, Hungy Nguyen, Kyler Cho, Michael Choi
+
+Team Website: 
+Trello: 
