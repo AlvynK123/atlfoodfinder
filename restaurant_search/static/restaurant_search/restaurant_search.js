@@ -45,6 +45,7 @@ function initMap() {
         const name = document.getElementById("name").value;
         const cuisine = document.getElementById("cuisine").value;
         const minRating = document.getElementById("min-rating").value;
+        const distance = document.getElementById("distance").value; 
         const locationInputValue = locationInput.value;
     
         if (!name && !cuisine && !locationInput) {
@@ -54,13 +55,17 @@ function initMap() {
 
         if (locationInputValue) {
             const selectedPlace = autocomplete.getPlace();
-            const location = selectedPlace ? selectedPlace.geometry.location : atlanta;
-            searchNearbyRestaurants(location, name, cuisine, minRating);
+            const location = selectedPlace ? selectedPlace.geometry.location : null;
+            if (location) {
+                searchNearbyRestaurants(location, name, cuisine, minRating, distance);
+            }
+        } 
+        else if (userLocation) {
+            searchNearbyRestaurants(userLocation, name, cuisine, minRating, distance);
         } else {
-            getUserLocation(name, cuisine, minRating);
+            alert("Please enable location services or enter a location.");
         }
 
-        searchNearbyRestaurants(location, name, cuisine, minRating);
     });
 }
 
@@ -75,18 +80,18 @@ function onPlaceChanged() {
     map.setZoom(13);
 }
 
-function searchNearbyRestaurants(location, name, cuisine, minRating) {
-    resultsPage = 0;
+function searchNearbyRestaurants(location, name, cuisine, minRating, distance) {
+    const radius = (distance === "Nearby" || distance === "Distance") ? "10000" : distance;
     
     const request = {
         location: location,
-        radius: '10000', 
+        radius: radius, 
         type: ['restaurant'],
         keyword: `${name} ${cuisine}`
     };
 
     service.nearbySearch(request, (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
             clearMarkers();
 
             const filteredResults = results.filter(restaurant => {
